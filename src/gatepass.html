@@ -1,0 +1,3009 @@
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta
+      name="author"
+      content="Mark Otto, Jacob Thornton, and Bootstrap contributors"
+    />
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="https://uhostel.chitkarauniversity.edu.in//student/images/fevicon.svg"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+      integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+      crossorigin="anonymous"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="all"
+      href="https://uhostel.chitkarauniversity.edu.in//student/css/custom.css?ver=113947"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="all"
+      href="https://uhostel.chitkarauniversity.edu.in//student/css/responsive.css"
+    />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <script
+      defer="defer"
+      src="https://uhostel.chitkarauniversity.edu.in//js/functions.js?ver=113947"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700;800;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css"
+    />
+    <title>UHostel Management</title>
+    <style>
+      ul.schoolList {
+        margin: 0;
+        padding: 5px;
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+      }
+      .schoolList li {
+        width: 100%;
+        padding-right: 14px;
+        margin-top: 10px;
+      }
+      .lFrm {
+        width: 25%;
+        float: left;
+      }
+      .lFrmTo {
+        width: 25%;
+        float: right;
+      }
+      .user-content p {
+        margin-bottom: 5px;
+      }
+      .user-content h4 {
+        margin-bottom: 5px;
+      }
+      .btnS {
+        width: 20%;
+        margin: 20px auto;
+        cursor: pointer;
+      }
+      @media only screen and (max-width: 743px) {
+        .lFrm {
+          width: 100%;
+          float: left;
+        }
+        .lFrmTo {
+          width: 100%;
+          float: left;
+        }
+        .btnS {
+          width: 30%;
+        }
+      }
+      .LIST_DATA {
+        text-align: center;
+        background: orange;
+        color: #fff;
+        padding: 5px;
+        font-size: 11px;
+      }
+      th,
+      td {
+        font-size: 12px;
+      }
+
+      /* Loader Start */
+      .loader {
+        border: 16px solid #f3f3f3; /* Light grey */
+        border-top: 16px solid #3498db; /* Blue */
+        border-radius: 50%;
+        width: 120px;
+        height: 120px;
+        animation: spin 2s linear infinite;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      /* Loader End */
+
+      .button_sub {
+        border-radius: 4px;
+        background-color: #d73d3d;
+        border: none;
+        color: #ffffff;
+        text-align: center;
+        font-size: 12px;
+        padding: 8px;
+        width: 80px;
+        transition: all 0.5s;
+        cursor: pointer;
+        margin: 5px;
+      }
+
+      .button_sub span {
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        transition: 0.5s;
+      }
+
+      .button_sub span:after {
+        content: "\00bb";
+        position: absolute;
+        opacity: 0;
+        top: 0;
+        right: -20px;
+        transition: 0.5s;
+      }
+
+      .button_sub:hover span {
+        padding-right: 25px;
+      }
+
+      .button_sub:hover span:after {
+        opacity: 1;
+        right: 0;
+      }
+    </style>
+
+    <script>
+      moduleName = "gatepass";
+      btnAddStudent =
+        '<button type="button" onClick="getAddStudent();" class="btn btn-primary btn-color btnCls">Add Student</button>';
+      btnBackStudent =
+        '<button type="button" onClick="getBackStudent();" class="btn btn-danger  btn-color btnCls">Back</button>';
+
+      var tableHeadArray = new Array(
+        new Array("srNo", "#", 'style="width:5%;text-align:center"'),
+        new Array(
+          "leaveType",
+          "Leave Type",
+          'style="width:8%;text-align:left"'
+        ),
+        new Array("status", "Status", 'style="width:8%;text-align:left"'),
+        new Array(
+          "leaveFrom",
+          "Leave From To",
+          'style="width:10%;text-align:left"'
+        ),
+        new Array("reasonT", "Reason", 'style="width:20%;text-align:left"'),
+        new Array(
+          "approveName",
+          'Approve / Reject By <div style="font-size:10px;color:red;">(Warden)</div>',
+          'style="width:10%;text-align:center"'
+        ),
+        new Array(
+          "comments",
+          "Approved Comments",
+          'style="width:10%;text-align:left"'
+        )
+      );
+
+      listURL = moduleName + "/studentListGatePass";
+      divResultName = "dList";
+      searchFormName = "frmGate";
+
+      window.onload = function () {
+        getSearch();
+      };
+
+      function getSearch() {
+        sendReq(listURL, tableHeadArray, divResultName, searchFormName, "");
+      }
+
+      function showHide(id) {
+        if (id == "1") {
+          $("#addDiv").show();
+          $("#viewBtn").show();
+          $("#addBtn").hide();
+          $("#viewDiv").hide();
+        } else if (id == "2") {
+          $("#addDiv").hide();
+          $("#viewDiv").show();
+          $("#viewBtn").hide();
+          $("#addBtn").show();
+        }
+      }
+
+      function getReset() {
+        $("#frmGate").trigger("reset");
+      }
+    </script>
+  </head>
+  <body>
+    <form
+      name="frmGate"
+      id="frmGate"
+      autocomplete="off"
+      method="post"
+      accept-charset="utf-8"
+    >
+      <div class="main">
+        <div class="header">
+          <div class="head-with-nav">
+            <div class="logo">
+              <a href="./index.html"
+                ><img
+                  src="https://uhostel.chitkarauniversity.edu.in/student/images/logo.png"
+                  alt="Logo"
+              /></a>
+            </div>
+            <ul>
+              <li class="">
+                <a href="./index.html">Home</a>
+              </li>
+              <li class="">
+                <a href="./gatepass.html"
+                  >Gatepass</a
+                >
+              </li>
+              <li class="">
+                <a
+                  href="https://uhostel.chitkarauniversity.edu.in/Finecollection"
+                  >Non-Disciplinary Action</a
+                >
+              </li>
+              <li class="">
+                <a
+                  href="https://uhostel.chitkarauniversity.edu.in/Hostelcheckout"
+                  >Hostel Checkout</a
+                >
+              </li>
+              <li class="">
+                <a
+                  href="https://uhostel.chitkarauniversity.edu.in/Changepassword"
+                  >Change Password</a
+                >
+              </li>
+              <li>
+                <a
+                  href="https://uhostel.chitkarauniversity.edu.in/Studentlogout"
+                  >Logout</a
+                >
+              </li>
+            </ul>
+            <div class="user-logout" style="display: none">
+              <a
+                href="https://uhostel.chitkarauniversity.edu.in/Studentlogout"
+                class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"
+              >
+                <i
+                  style="
+                    color: #ce1518;
+                    cursor: pointer;
+                    position: absolute;
+                    right: 24px;
+                    top: 26px;
+                    font-size: 25px;
+                  "
+                  class="fa fa-sign-out"
+                  aria-hidden="true"
+                ></i>
+                <!--img style="cursor:pointer;position: absolute;right: 20px;top: 26px;" src="https://uhostel.chitkarauniversity.edu.in/student/images/logout-red.png" alt="LogoutPic" -->
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="home-box">
+          <div class="user-box">
+            <div class="user-detail">
+              <div class="user-profile">
+                <img
+                  src="https://uhostel.chitkarauniversity.edu.in/student/images/user5.png"
+                  alt="ProfilePic"
+                />
+              </div>
+              <div class="user-content" style="width: 90%">
+                <h4>Hi, ROHAN MAITI</h4>
+                <p>RABINDRANATH MAITI</p>
+                <p>2211981314</p>
+                <p>2022-BE-CSE</p>
+              </div>
+              <div class="user-logout">
+                <a
+                  href="https://uhostel.chitkarauniversity.edu.in/Studentlogout"
+                  class="d-b td-n pY-5 bgcH-grey-100 c-grey-700"
+                >
+                  <img
+                    style="cursor: pointer"
+                    src="https://uhostel.chitkarauniversity.edu.in/student/images/logout-red.png"
+                    alt="LogoutPic"
+                  />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="select-form" id="viewDiv">
+            <div class="select-input">
+              <div class="select-step-first">
+                <div class="row">
+                  <div class="col-md-12" style="display: flex">
+                    <label style="width: 50%; color: #ce1518; font-size: 15px"
+                      >Gatepass History</label
+                    >
+                    <div class="btnMod" style="width: 50%">
+                      <button
+                        style="float: right; margin-bottom: 20px"
+                        type="button"
+                        onclick="checkFineStatus(); "
+                        id="addbtn"
+                        class="btn cur-p btn-danger btn-sm btn-color"
+                      >
+                        Apply Gatepass
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="dList table-responsive p-20">
+                  <table
+                    id="dataTable"
+                    class="table table-striped dataTable table-hover responsive_gate"
+                    style="width: 100%"
+                  >
+                    <thead>
+                      <tr>
+                        <td scope="col" style="width: 5%; text-align: center">
+                          <b>#</b>
+                        </td>
+                        <td scope="col" style="width: 8%; text-align: left">
+                          <b>Leave Type</b>
+                        </td>
+                        <td scope="col" style="width: 8%; text-align: left">
+                          <b>Status</b>
+                        </td>
+                        <td scope="col" style="width: 10%; text-align: left">
+                          <b>Leave From To</b>
+                        </td>
+                        <td scope="col" style="width: 20%; text-align: left">
+                          <b>Reason</b>
+                        </td>
+                        <td scope="col" style="width: 10%; text-align: center">
+                          <b
+                            >Approve / Reject By
+                            <div style="font-size: 10px; color: red">
+                              (Warden)
+                            </div></b
+                          >
+                        </td>
+                        <td scope="col" style="width: 10%; text-align: left">
+                          <b>Approved Comments</b>
+                        </td>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <td scope="col" style="width: 5%; text-align: center">
+                          <b>#</b>
+                        </td>
+                        <td scope="col" style="width: 8%; text-align: left">
+                          <b>Leave Type</b>
+                        </td>
+                        <td scope="col" style="width: 8%; text-align: left">
+                          <b>Status</b>
+                        </td>
+                        <td scope="col" style="width: 10%; text-align: left">
+                          <b>Leave From To</b>
+                        </td>
+                        <td scope="col" style="width: 20%; text-align: left">
+                          <b>Reason</b>
+                        </td>
+                        <td scope="col" style="width: 10%; text-align: center">
+                          <b
+                            >Approve / Reject By
+                            <div style="font-size: 10px; color: red">
+                              (Warden)
+                            </div></b
+                          >
+                        </td>
+                        <td scope="col" style="width: 10%; text-align: left">
+                          <b>Approved Comments</b>
+                        </td>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                      <tr>
+                        <td style="width: 5%; text-align: center">1&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          13-MAR-2025<br />(4:30AM TO 5:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">BUYING FOOD</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">2&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          05-MAR-2025<br />(6AM TO 10PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">PLACEMENT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            KULDEEP SINGH<br />9682310833
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">3&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          03-MAR-2025<br />(6AM TO 12PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">PLACEMENT PURPOSE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            KULDEEP SINGH<br />9682310833
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">4&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          02-MAR-2025<br />(6:30 AM TO 10PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">PLACEMENT PURPOSE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">5&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          01-MAR-2025<br />(10 AM TO 2PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIR CUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">6&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          27-FEB-2025<br />(7:00 AM TO 10:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">GOING CUPB CAMPUS</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">7&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          23-FEB-2025<br />(4:00 PM TO 5:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">MARKETTING</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">8&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />315-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          16-FEB-2025<br />(4:00 PM TO 5:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">SHOPPING</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">9&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />428-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          31-JAN-2025<br />(4:20 TO 5:30)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">BUYING MEDICINE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">10&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: RED"><b>REJECTED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />428-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          31-JAN-2025<br />(4:20PM TO 6:00PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">BUYING MEDICINE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: RED">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">11&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />428-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          30-JAN-2025<br />(4:20 PM TO 5:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">DOCUMENT PRINTING</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">12&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          20-DEC-2024<br />(4:00. PM)<br />05-DEC-2025<br />(6:00
+                          AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">WINTER VACATION</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">13&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          29-OCT-2024<br />(2:30 PM)<br />03-NOV-2024<br />(12AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">DIWALI</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">14&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          01-OCT-2024<br />(5:30 PM)<br />14-OCT-2024<br />(9:00
+                          AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">GOING HOME </span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">15&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          22-SEP-2024<br />(11:00 AM TO 3:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIR CUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">16&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          24-AUG-2024<br />(11:00 AM TO 6:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">GOING TO PINJORE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">17&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          18-AUG-2024<br />(10:00 AM TO 5:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">KALKA</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">18&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          17-AUG-2024<br />(8:30 AM TO 5:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">SHOPPING</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">19&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: NAVY"><b>NEW REQUEST</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          14-AUG-2024<br />(6:00 PM TO 8:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">BUYING MEDICINE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          ---&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">20&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          10-AUG-2024<br />(4:00 PM TO 7:30 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">ROMING GHURTE JABO</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">21&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />205-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          13-JUL-2024<br />(12:20 PM TO 4:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIR CUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">22&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          01-JUN-2024<br />(7:00 PM)<br />30-JUN-2024<br />(6:00
+                          AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">SUMMER VACATION</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">23&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          31-MAY-2024<br />(6:00)<br />01-JUN-2024<br />(5:00
+                          AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIRCUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">24&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: RED"><b>REJECTED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          31-MAY-2024<br />(6:00 PM TO 9:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIRCUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: RED">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">25&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          14-APR-2024<br />(11:05 AM TO 2:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIR CUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">26&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          22-MAR-2024<br />(4:00 PM)<br />23-MAR-2024<br />(6:00
+                          PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">GOING PINJORE</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">27&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          24-FEB-2024<br />(9:30 AN TO 9:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">GOING CHANDIGARH</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">28&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          10-FEB-2024<br />(12:30 AM)<br />11-FEB-2024<br />(11:00
+                          PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">SHIMLA TOUR</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">29&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          22-JAN-2024<br />(1:00 PM TO 6:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">BHANDARA</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">30&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          16-DEC-2023<br />(9:00 PM)<br />19-JAN-2024<br />(6:00
+                          PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">WINTER VACCINATION</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">31&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          15-DEC-2023<br />(3:00PM TO 7:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIR CUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            PRADEEP KUMAR<br />9805965420
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">32&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          11-NOV-2023<br />(10AM TO 5PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">MOBILE REPAIR</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RANJEET JAMWAL<br />7018080872
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">33&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          10-NOV-2023<br />(8:00AM)<br />11-NOV-2023<br />(6:00AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">VACCATION</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            KRISHNA KUMAR<br />9457989712
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">34&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          22-OCT-2023<br />(10:00 AM TO 6:30PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">DURGA PUJA</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">35&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          21-OCT-2023<br />(5:00PM)<br />22-OCT-2023<br />(6:00
+                          AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px"
+                            >MARKETING AND ROMING</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">36&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          08-OCT-2023<br />(5:30 AM TO 6:00 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">ROAMING</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMINDER<br />8629078400
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">37&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            BOSE BOYS (BOYS)<br />204-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          03-SEP-2023<br />(11 AM TO 3 PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">HAIR CUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            DHARMENDAR PRAKASH<br />9418406678
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">38&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: ORANGE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            DAY OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            ARYABHATTA (BOYS)<br />208-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          26-JUL-2023<br />(10:00AM TO 2:00AM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">FOR HAIRCUT</span>&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RAJESH KUMAR<br />9805965412
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">39&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            ARYABHATTA (BOYS)<br />208-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          06-JUN-2023<br />(7:00 AM)<br />26-JUN-2023<br />(5:00
+                          PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px">SUMMER VACATION</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            YUVRAJ SINGH<br />8219036940
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                      <tr>
+                        <td style="width: 5%; text-align: center">40&nbsp;</td>
+                        <td style="width: 8%; text-align: left">
+                          <div
+                            style="
+                              background-color: SKYBLUE;
+                              color: #fff;
+                              font-weight: BOLD;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          >
+                            NIGHT OUT
+                          </div>
+                          <div
+                            style="
+                              font-size: 10px;
+                              text-align: CENTER;
+                              padding: 5px;
+                              margin-top: 2px;
+                            "
+                          ></div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 8%; text-align: left">
+                          <div style="color: GREEN"><b>APPROVED</b></div>
+                          <div
+                            style="
+                              background-color: AZURE;
+                              padding: 5px;
+                              font-size: 10px;
+                            "
+                          >
+                            ARYABHATTA (BOYS)<br />208-
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">
+                          04-JUN-2023<br />(6:00 AM)<br />05-JUN-2023<br />(5:00
+                          PM)&nbsp;
+                        </td>
+                        <td style="width: 20%; text-align: left">
+                          <span style="font-size: 10px"
+                            >TOURING DESTINATION KASHOLI</span
+                          >&nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: center">
+                          <div style="color: GREEN">
+                            RAJESH KUMAR<br />9817031714
+                          </div>
+                          &nbsp;
+                        </td>
+                        <td style="width: 10%; text-align: left">&nbsp;</td>
+                      </tr>
+                    </tbody>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="select-form" style="display: none" id="addDiv">
+            <div class="select-input">
+              <div class="select-step-first">
+                <div class="row">
+                  <div class="col-md-12" style="display: flex">
+                    <label style="width: 50%; color: #ce1518; font-size: 15px"
+                      >Gatepass Request</label
+                    >
+                    <div class="btnMod" style="width: 50%">
+                      <button
+                        style="float: right; margin-bottom: 20px"
+                        type="button"
+                        onclick="showHide(2);getReset();"
+                        id="addbtn"
+                        class="btn cur-p btn-danger btn-sm btn-color"
+                      >
+                        View
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <!--<label style="display:inline-block;width:100%;padding-bottom:10px;color:#ce1518;font-size:15px;border-bottom: solid 1px #e4d8e7;">Gatepass Request</label>	-->
+                <ul class="schoolList">
+                  <li>
+                    <label class="form-group"
+                      >Apply Date
+                      <span style="padding-left: 20px; font-weight: normal"
+                        >09-Mar-2025</span
+                      ></label
+                    >
+                  </li>
+                  <li>
+                    <label
+                      class="input-type"
+                      style="vertical-align: top; margin-top: 14px"
+                      >Apply For</label
+                    >
+
+                    <div
+                      class="form-check form-check-inline"
+                      style="padding-left: 28px"
+                    >
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        value="1"
+                        name="applyFor"
+                        id="applyFor1"
+                        onclick="getC(1);"
+                        style="cursor: pointer"
+                        checked="checked"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="inlineRadio1"
+                        style="font-weight: normal"
+                        >Day out</label
+                      >
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                      <input
+                        class="form-check-input"
+                        type="radio"
+                        value="2"
+                        name="applyFor"
+                        id="applyFor2"
+                        onclick="getC(2);"
+                        style="cursor: pointer"
+                      />
+                      <label
+                        class="form-check-label"
+                        for="inlineRadio2"
+                        style="font-weight: normal"
+                        >Night out</label
+                      >
+                    </div>
+                  </li>
+                  <li>
+                    <div class="lFrm">
+                      <label>Out Date </label><br />
+                      <input
+                        type="date"
+                        name="dateCheckOut"
+                        id="dateCheckOut"
+                        class="form-control datepicker hasDatepicker"
+                        style="display: inline-block; width: 90%"
+                      />
+                    </div>
+                    <div class="lFrm">
+                      <label>Out Time (approximate i.e. 4:50 PM)</label><br />
+                      <input
+                        type="text"
+                        name="checkoutTime"
+                        id="checkoutTime"
+                        class="form-control"
+                        placeholder="Time (approximate)"
+                        style="display: inline-block; width: 90%"
+                      />
+                    </div>
+                    <div class="lFrm inDt" style="display: none">
+                      <label>In Date </label><br />
+                      <input
+                        type="text"
+                        name="dateCheckIn"
+                        id="dateCheckIn"
+                        class="form-control datepicker hasDatepicker"
+                        style="display: inline-block; width: 90%"
+                      />
+                    </div>
+                    <div class="lFrm">
+                      <label>In Time (approximate i.e. 7:00 PM)</label><br />
+                      <input
+                        type="text"
+                        name="checkinTime"
+                        id="checkinTime"
+                        class="form-control"
+                        placeholder="Time (approximate)"
+                        style="display: inline-block; width: 90%"
+                      />
+                    </div>
+                  </li>
+                  <li>
+                    <label style="margin-top: 20px"
+                      >Leave Required Reason
+                      <span style="color: red; font-size: 12px"
+                        >(Min. 10 Words)</span
+                      ></label
+                    >
+                    <textarea
+                      placeholder="Enter Reason"
+                      name="reason"
+                      id="reason"
+                      class="form-control"
+                      style="height: 100px; width: 100%"
+                    ></textarea>
+                  </li>
+                </ul>
+                <style>
+                  .imgcenter {
+                    display: block;
+                    margin-left: auto;
+                    margin-right: auto;
+                    width: 150px;
+                  }
+                </style>
+                <button
+                  class="button_sub"
+                  id="saveBtn"
+                  onclick="getGatePassApply(this.form,'gatepass');return false;"
+                >
+                  <span>Submit </span>
+                </button>
+                <span id="spn_loader"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="myModal" class="modal fade" role="dialog">
+          <div class="modal-dialog">
+            <!-- Modal content-->
+            <div class="modal-content">
+              <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">
+                  ×
+                </button>
+                <h4 class="modal-title">Modal Header</h4>
+              </div>
+              <div class="modal-body">
+                <p>Some text in the modal.</p>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-default"
+                  data-dismiss="modal"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-menu" style="border-top: 1px solid #ccc">
+          <ul class="footerList" id="footerList">
+            <li>
+              <a href="./index.html" class="btnChk">
+                <i class="fa fa-home" aria-hidden="true"></i>
+                <div>Home</div>
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="./gatepass.html"
+                class="btnChk"
+              >
+                <i class="fa fa-bell" aria-hidden="true"></i>
+                <div>Gatepass</div>
+              </a>
+            </li>
+
+            <li>
+              <a
+                href="https://uhostel.chitkarauniversity.edu.in/Changepassword"
+                class="btnChk"
+              >
+                <i class="fa fa-keyboard-o" aria-hidden="true"></i>
+                <div>Change Password</div>
+              </a>
+            </li>
+            <li>
+              <a href="#" class="btnChk">
+                <i class="fa fa-bell" aria-hidden="true"></i>
+                <div>Notification</div>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="modal fade"
+          id="studentModal"
+          tabindex="-1"
+          aria-labelledby="studentModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog student-model-dialog">
+            <div class="modal-content student-custom">
+              <div class="modal-header">
+                <h5
+                  class="modal-title student-model-title"
+                  id="studentModalLabel"
+                >
+                  Modal title
+                </h5>
+              </div>
+              <div class="modal-body student-model-data"></div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  style="display: none"
+                >
+                  Save changes
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script
+          src="https://code.jquery.com/jquery-3.6.0.min.js"
+          integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+          crossorigin="anonymous"
+        ></script>
+        <script
+          src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js"
+          integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+          crossorigin="anonymous"
+        ></script>
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js"
+          integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+          crossorigin="anonymous"
+        ></script>
+
+        <script>
+          function getRemarks(id) {
+            queryString = "id=" + id;
+            url = "finecollection/getRemarks";
+            $.ajax({
+              url: url,
+              method: "post",
+              data: queryString,
+            }).done(function (data) {
+              $(".student-model-title").html("Fine Remarks");
+              $(".student-model-data").html(data);
+              $("#studentModal").modal("show");
+            });
+          }
+        </script>
+        <link
+          href="https://code.jquery.com/ui/1.10.4/themes/ui-lightness/jquery-ui.css"
+          rel="stylesheet"
+        />
+        <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+        <script>
+          isClk = 0;
+          function getC(id) {
+            if (id == "1") {
+              $(".inDt").hide();
+              $("#dateCheckIn").html("");
+              $("#checkoutTime").attr("placeholder", "i.e. 5:30 PM");
+              $("#checkinTime").attr("placeholder", "i.e. 8:35 PM");
+            } else if (id == "2") {
+              $(".inDt").show();
+              $("#dateCheckIn").html("");
+              $("#checkoutTime").attr("placeholder", "i.e. 5:30 PM");
+              $("#checkinTime").attr("placeholder", "i.e. 3:25 PM");
+            }
+          }
+
+          $(function () {
+            $(".datepicker").datepicker({
+              dateFormat: "dd-mm-yy",
+              changeMonth: true,
+              changeYear: true,
+            });
+            //$( ".datepicker" ).datepicker("show");
+          });
+
+		  let serialNumber = 1; // Initialize a serial number variable
+
+function getGatePassApply(frm) {
+    // Create an object to hold the form data
+    var formData = {
+        applyFor: $("input[name='applyFor']:checked").val(), // Get the selected radio button value
+        dateCheckOut: $("#dateCheckOut").val(), // Get the value of the checkout date
+        checkoutTime: $("#checkoutTime").val(), // Get the value of the checkout time
+        dateCheckIn: $("#dateCheckIn").val(), // Get the value of the check-in date
+        checkinTime: $("#checkinTime").val(), // Get the value of the check-in time
+        reason: $("#reason").val() // Get the value of the reason textarea
+    };
+
+    // Log the form data object to the console
+    console.log("Form Data Object:", formData); // This will output the form data object in the console
+
+    // Create a new table row dynamically
+    var newRow = `
+        <tr>
+            <td style="text-align: center;">${serialNumber++}</td>
+            <td style="text-align: left;">${formData.applyFor}</td>
+            <td style="text-align: left;">APPROVED</td> <!-- Assuming status is always approved for this example -->
+            <td style="text-align: left;">${formData.dateCheckOut} (${formData.checkoutTime})</td>
+            <td style="text-align: left;">${formData.reason}</td>
+            <td style="text-align: center;">Rohan Maiti</td> <!-- Placeholder for Warden Name -->
+            <td style="text-align: left;">XYZ</td> <!-- Placeholder for comments -->
+        </tr>
+    `;
+
+    // Append the new row to the table body
+	console.log(newRow);
+	console.log($("#dataTable tbody"))
+	// const tbody = document.querySelector("#dataTable tbody");
+	// tbody.prepend(newRow);
+    $("#dataTable tbody").prepend(newRow);
+
+    // frm.reset(); // Reset the form fields
+}
+
+function incrementTableNumbers() {
+    const tbody = document.querySelector("#dataTable tbody"); 
+    const rows = tbody.querySelectorAll("tr"); 
+
+    rows.forEach(row => {
+        const firstTd = row.querySelector("td:nth-child(1)"); // Select the first <td> of each row
+        if (firstTd) {
+            const num = parseInt(firstTd.textContent.trim(), 10); // Extract and parse number
+            if (!isNaN(num)) {
+                firstTd.textContent = (num + 1) + " "; // Increment and update
+            }
+        }
+    });
+}
+// Call the function to update the table
+// incrementTableNumbers();
+
+
+
+        //   function getGatePassApply(frm, url){
+			// var formData = {
+    		//     applyFor: $("input[name='applyFor']:checked").val(), // Get the selected radio button value
+    		//     dateCheckOut: $("#dateCheckOut").val(), // Get the value of the checkout date
+    		//     checkoutTime: $("#checkoutTime").val(), // Get the value of the checkout time
+    		//     dateCheckIn: $("#dateCheckIn").val(), // Get the value of the check-in date
+    		//     checkinTime: $("#checkinTime").val(), // Get the value of the check-in time
+    		//     reason: $("#reason").val() // Get the value of the reason textarea
+    		// };
+
+    		// // Log the form data object to the console
+    		// console.log("Form Data Object:", formData);
+			// var newRow = `
+        	// <tr>
+            // <td style="text-align: center;">${serialNumber++}</td>
+            // <td style="text-align: left;">${formData.applyFor}</td>
+            // <td style="text-align: left;">APPROVED</td> <!-- Assuming status is always approved for this example -->
+            // <td style="text-align: left;">${formData.dateCheckOut} ( ${formData.checkoutTime} )</td>
+            // <td style="text-align: left;">${formData.reason}</td>
+            // <td style="text-align: center;">Warden Name</td> <!-- Placeholder for Warden Name -->
+            // <td style="text-align: left;">Approved Comments</td> <!-- Placeholder for comments -->
+        	// </tr>
+    		// `;
+
+    		// // Append the new row to the table body
+    		// $("#dataTable tbody").append(newRow);
+
+    		// // Optionally, reset the form fields after submission
+    		// frm.reset(); // Reset the form fields
+
+            // if (isClk == 1) {
+            //   return false;
+            // }
+            // if (false === confirm("Are you apply for gatepass?")) {
+            //   isClk = 0;
+            //   return false;
+            // }
+
+            // $("#spn_loader").html(
+            //   '<img src="https://uhostel.chitkarauniversity.edu.in//student/images/small_loader.gif">&nbsp;'
+            // );
+            // $("#spn_loader").show();
+            // $("#saveBtn").hide();
+
+            // isClk = 1;
+
+            // $.ajax({
+            //   url: url + "/initSendData",
+            //   type: "POST",
+            //   async: false,
+            //   data: $("#frmGate").serialize() + "&gid=",
+            //   beforeSend: function () {
+            //     $("#saveBtn").hide();
+            //   },
+            //   success: function (data) {
+            //     ret = JSON.parse(data);
+            //     result = ret["result"];
+            //     msg = ret["msg"];
+            //     $("#spn_loader").hide();
+            //     $("#saveBtn").show();
+            //     isClk = 0;
+            //     if (result == "error") {
+            //       isClk = 0;
+            //       messageBox(msg);
+            //       return false;
+            //     } else if (result == "ok") {
+            //       isClk = 0;
+            //       showHide(2);
+            //       getSearch();
+            //       return false;
+            //     }
+            //   },
+            //   complete: function () {
+            //     $("#spn_loader").hide();
+            //     $("#saveBtn").show();
+            //     isClk = 0;
+            //   },
+            // });
+        //   }
+          function checkFineStatus() {
+            var isFineGatePassBlock = "0"; // Get the fine status from PHP
+
+            if (isFineGatePassBlock == "1") {
+              alert(
+                "You are blocked due to unpaid fine. Please pay the fine to proceed."
+              );
+            } else {
+              showHide(1); // Call the original function to apply gatepass
+              getReset(); // Reset the form if needed
+            }
+          }
+        </script>
+      </div>
+    </form>
+    <div
+      id="ui-datepicker-div"
+      class="ui-datepicker ui-widget ui-widget-content ui-helper-clearfix ui-corner-all"
+    ></div>
+  </body>
+</html>
